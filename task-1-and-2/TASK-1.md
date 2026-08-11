@@ -34,18 +34,18 @@ these are naive for a system with hundreds of concurrent users, say so.
 
 ---
 
-## Why structured this way
+## Why I Formatted the Prompt This Way
 
 The scenario in the prompt names a tech stack explicitly instead of "build a notification system": vague stack means the model guesses and you get code you can't drop into your project. Numbering the six deliverables in a fixed order forces schema-first design, which is where most notification systems actually go wrong (denormalize recipient list into the notification doc vs. reference the task and join at read time: that decision cascades into everything downstream).
 
 ---
 
-## What I'm specifically asking for
+## What I Asked the Model to Cover
 
 Not boilerplate CRUD: the hard parts: dedup logic (status change events can double-fire from retries), multi-device delivery, and the offline-user problem, which is the part people forget until a user complains their notification badge is wrong.
 
 ---
 
-## Assumptions stated up front
+## Assumptions I Laid Out
 
 Socket.io over raw WebSockets, single Mongo instance, recipient scope limited to assignees + owner. I put these in the prompt itself rather than letting the model silently pick: an AI assistant will happily assume "notify everyone on the project" if you don't constrain it, which is a different (and noisier) system.
