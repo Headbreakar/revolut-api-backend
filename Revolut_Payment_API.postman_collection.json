@@ -1,0 +1,253 @@
+{
+  "info": {
+    "_postman_id": "a82f341b-871d-4f11-91a1-revolut-collection",
+    "name": "Revolut Payment Management API",
+    "description": "Postman Collection for Revolut Payment Management System Backend API. Includes variables for orderId, baseUrl, and API keys.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "revolut_secret_api_key_12345",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "ORD-10234",
+      "type": "string"
+    },
+    {
+      "key": "revolutOrderId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Create Payment Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.id) {",
+              "    pm.collectionVariables.set('revolutOrderId', jsonData.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 4999,\n  \"currency\": \"GBP\",\n  \"description\": \"Order #ORD-10234\",\n  \"customer\": {\n    \"email\": \"customer@example.com\",\n    \"full_name\": \"Jane Doe\"\n  },\n  \"line_items\": [\n    {\n      \"name\": \"Wireless Mouse\",\n      \"type\": \"physical\",\n      \"quantity\": { \"value\": 1 },\n      \"unit_price_amount\": 4999,\n      \"total_amount\": 4999\n    }\n  ],\n  \"capture_mode\": \"automatic\",\n  \"merchant_order_data\": {\n    \"reference\": \"ORD-10234\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "create"
+          ]
+        },
+        "description": "Create a new payment order in pending state."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Process Payment (Success)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardLastFour\": \"4242\",\n  \"cardBrand\": \"visa\",\n  \"cardExpiry\": \"12/28\",\n  \"paymentMethodType\": \"card\",\n  \"simulateDecline\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/process/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "process",
+            "{{orderId}}"
+          ]
+        },
+        "description": "Simulate processing payment for an order."
+      },
+      "response": []
+    },
+    {
+      "name": "2b. Process Payment (Simulate Decline)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardLastFour\": \"4242\",\n  \"cardBrand\": \"visa\",\n  \"cardExpiry\": \"12/28\",\n  \"paymentMethodType\": \"card\",\n  \"simulateDecline\": true,\n  \"declineReason\": \"insufficient_funds\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/process/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "process",
+            "{{orderId}}"
+          ]
+        },
+        "description": "Simulate card decline scenario."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get Payment Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/status/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "status",
+            "{{orderId}}"
+          ]
+        },
+        "description": "Retrieve order state, payment attempts, and refunds."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Process Partial Refund",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "refund_req_unique_999",
+            "type": "text"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 1000,\n  \"currency\": \"GBP\",\n  \"description\": \"Partial refund for item\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/refund/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "refund",
+            "{{orderId}}"
+          ]
+        },
+        "description": "Issue a partial refund for a completed order."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get Payment History",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/history?page=1&limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "history"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get paginated order history list."
+      },
+      "response": []
+    }
+  ]
+}
