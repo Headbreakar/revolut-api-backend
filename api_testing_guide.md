@@ -12,7 +12,8 @@ Before testing in Postman or cURL, make sure MongoDB is running and start your E
 node server.js
 ```
 
-*Expected output:*
+_Expected output:_
+
 ```text
 MongoDB Connected: 127.0.0.1
 Payment API Server running on port 3000
@@ -29,12 +30,14 @@ You can test in **Postman** by creating requests for each endpoint below.
 ---
 
 ### Request 1: Create a Payment Order
+
 - **Method**: `POST`
 - **URL**: `http://localhost:3000/api/payments/create`
 - **Headers**:
   - `Content-Type`: `application/json`
-  - *(Optional if API key enabled)* `x-api-key`: `revolut_secret_api_key_12345`
+  - _(Optional if API key enabled)_ `x-api-key`: `revolut_secret_api_key_12345`
 - **Body** (`raw` -> `JSON`):
+
 ```json
 {
   "amount": 4999,
@@ -59,18 +62,21 @@ You can test in **Postman** by creating requests for each endpoint below.
   }
 }
 ```
+
 - **Expected Response (201 Created)**:
   - Copy the returned `"id"` (e.g. `550e8400-e29b-41d4-a716-446655440000`) for the next requests!
 
 ---
 
 ### Request 2: Process Payment (Simulate Revolut Gateway)
+
 - **Method**: `POST`
 - **URL**: `http://localhost:3000/api/payments/process/:orderId`  
-  *(Replace `:orderId` with Revolut ID or internal reference, e.g. `http://localhost:3000/api/payments/process/ORD-10234`)*
+  _(Replace `:orderId` with Revolut ID or internal reference, e.g. `http://localhost:3000/api/payments/process/ORD-10234`)_
 - **Headers**:
   - `Content-Type`: `application/json`
 - **Body** (`raw` -> `JSON`):
+
 ```json
 {
   "cardLastFour": "4242",
@@ -80,12 +86,14 @@ You can test in **Postman** by creating requests for each endpoint below.
   "simulateDecline": false
 }
 ```
+
 - **Expected Response (200 OK)**:
   - Order state moves to `"completed"`, payment method metadata is recorded.
 
 ---
 
 ### Request 3: Get Payment Status
+
 - **Method**: `GET`
 - **URL**: `http://localhost:3000/api/payments/status/ORD-10234`
 - **Headers**: None required.
@@ -95,12 +103,14 @@ You can test in **Postman** by creating requests for each endpoint below.
 ---
 
 ### Request 4: Process Partial or Full Refund
+
 - **Method**: `POST`
 - **URL**: `http://localhost:3000/api/payments/refund/ORD-10234`
 - **Headers**:
   - `Content-Type`: `application/json`
   - `Idempotency-Key`: `refund_req_unique_999`
 - **Body** (`raw` -> `JSON`):
+
 ```json
 {
   "amount": 1000,
@@ -108,13 +118,15 @@ You can test in **Postman** by creating requests for each endpoint below.
   "description": "Partial refund for customer"
 }
 ```
+
 - **Expected Response (201 Created)**:
   - Returns refund object, updates `refunded_amount` in DB.
-  - *Retry Test*: If you press **Send** again with the same `Idempotency-Key`, you get a `200 OK` idempotent response without double-refunding.
+  - _Retry Test_: If you press **Send** again with the same `Idempotency-Key`, you get a `200 OK` idempotent response without double-refunding.
 
 ---
 
 ### Request 5: Get Payment History
+
 - **Method**: `GET`
 - **URL**: `http://localhost:3000/api/payments/history?page=1&limit=10`
 - **Expected Response (200 OK)**:
@@ -123,18 +135,20 @@ You can test in **Postman** by creating requests for each endpoint below.
 ---
 
 ### Request 6: Test Webhook Listener (Optional)
+
 - **Method**: `POST`
 - **URL**: `http://localhost:3000/api/payments/webhook`
 - **Headers**:
   - `Content-Type`: `application/json`
-  - `Revolut-Request-Timestamp`: `1770768000000` *(current timestamp in ms)*
-  - `Revolut-Signature`: *(HMAC SHA-256 signature calculated from payload)*
+  - `Revolut-Request-Timestamp`: `1770768000000` _(current timestamp in ms)_
+  - `Revolut-Signature`: _(HMAC SHA-256 signature calculated from payload)_
 
 ---
 
 ## Alternative Testing Methods
 
 ### Method B: Testing with cURL commands in Terminal
+
 If you prefer testing directly in your terminal, run these commands:
 
 ```bash
@@ -162,7 +176,8 @@ curl http://localhost:3000/api/payments/history
 ```
 
 ### Method C: One-Click Automated DB Test Script
-You can also run our included integration test script that tests all endpoints against your local MongoDB automatically:
+
+You can also run the included integration test script that tests all endpoints against your local MongoDB automatically:
 
 ```bash
 node test_verification_db.js

@@ -177,7 +177,7 @@ curl http://localhost:3000/api/payments/history
 
 ### Method C: One-Click Automated DB Test Script
 
-You can also run our included integration test script that tests all endpoints against your local MongoDB automatically:
+You can also run the included integration test script that tests all endpoints against your local MongoDB automatically:
 
 ```bash
 node test_verification_db.js
