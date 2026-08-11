@@ -36,7 +36,7 @@ these are naive for a system with hundreds of concurrent users, say so.
 
 ## Why structured this way
 
-The scenario in the prompt names a tech stack explicitly instead of "build a notification system": vague stack means the model guesses (Pusher? Ably? raw ws? Socket.io?) and you get code you can't drop into your project. Numbering the six deliverables in a fixed order forces schema-first design, which is where most notification systems actually go wrong (denormalize recipient list into the notification doc vs. reference the task and join at read time: that decision cascades into everything downstream).
+The scenario in the prompt names a tech stack explicitly instead of "build a notification system": vague stack means the model guesses and you get code you can't drop into your project. Numbering the six deliverables in a fixed order forces schema-first design, which is where most notification systems actually go wrong (denormalize recipient list into the notification doc vs. reference the task and join at read time: that decision cascades into everything downstream).
 
 ---
 
